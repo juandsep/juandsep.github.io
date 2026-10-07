@@ -1,13 +1,517 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Juani</title>
-<meta http-equiv="refresh" content="0; url=/telegram-personal-assistant/guia/">
-<link rel="canonical" href="https://juandsep.github.io/telegram-personal-assistant/guia/">
+<title>Juan D Sepulveda</title>
+<meta name="description" content="Juan D Sepulveda, Lead Data Scientist. Causal inference, LLM systems and MLOps: portfolio projects with code, demos and results.">
+<link rel="canonical" href="https://juandsep.github.io/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23111613'/><text x='5' y='22' font-family='monospace' font-size='16' fill='%2346d39a'>&gt;_</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1110; --panel: #151a18; --panel-2: #1b211f; --line: #26302c;
+    --fg: #e3e8e5; --muted: #8b9a93; --dim: #5b6a63;
+    --green: #46d39a; --cyan: #5ec8e5; --yellow: #e8c468; --pink: #f0789a; --purple: #b79cf0; --orange: #f0a35e;
+    --glow: rgba(70, 211, 154, .14);
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f5f0; --panel: #ffffff; --panel-2: #f0eee7; --line: #e0ddd2;
+      --fg: #1c211f; --muted: #5d6a64; --dim: #8f9993;
+      --green: #0b7a52; --cyan: #106f8f; --yellow: #8a6400; --pink: #b8325a; --purple: #6a46c2; --orange: #a85412;
+      --glow: rgba(11, 122, 82, .10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f5f0; --panel: #ffffff; --panel-2: #f0eee7; --line: #e0ddd2;
+    --fg: #1c211f; --muted: #5d6a64; --dim: #8f9993;
+    --green: #0b7a52; --cyan: #106f8f; --yellow: #8a6400; --pink: #b8325a; --purple: #6a46c2; --orange: #a85412;
+    --glow: rgba(11, 122, 82, .10);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.65 var(--sans);
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, var(--glow), transparent 60%),
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: auto, 48px 48px, 48px 48px;
+    background-attachment: fixed;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%);
+  }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 4px; }
+  .mono { font-family: var(--mono); }
+  .wrap { position: relative; max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+  /* top bar */
+  .bar {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar .wrap { display: flex; align-items: center; gap: 16px; height: 52px; font: 13px var(--mono); }
+  .bar .prompt { color: var(--green); white-space: nowrap; }
+  .bar nav { display: flex; gap: 18px; margin-left: auto; overflow-x: auto; }
+  .bar nav a { color: var(--muted); }
+  .bar nav a:hover { color: var(--fg); text-decoration: none; }
+  .bar nav a::before { content: "./"; color: var(--dim); }
+  .theme {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    font: 12px var(--mono); padding: 4px 8px; border-radius: 6px; cursor: pointer;
+  }
+  .theme:hover { color: var(--fg); border-color: var(--muted); }
+
+  /* hero */
+  .hero { padding: 72px 0 40px; display: grid; gap: 32px; grid-template-columns: 1.15fr 1fr; align-items: center; }
+  .eyebrow { font: 13px var(--mono); color: var(--green); margin: 0 0 14px; }
+  .eyebrow::before { content: "● "; animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  h1 {
+    font: 800 clamp(2.4rem, 6vw, 3.8rem)/1.02 var(--mono); letter-spacing: -.03em; margin: 0 0 18px;
+  }
+  h1 .accent { color: var(--green); }
+  .lead { color: var(--muted); font-size: 1.08rem; max-width: 34em; margin: 0 0 24px; }
+  .lead strong { color: var(--fg); font-weight: 500; }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    font: 600 13px var(--mono); padding: 10px 14px; border-radius: 8px;
+    border: 1px solid var(--line); color: var(--fg); background: var(--panel);
+    transition: border-color .15s, transform .15s;
+  }
+  .btn:hover { text-decoration: none; border-color: var(--green); transform: translateY(-1px); }
+  .btn.primary { background: var(--green); color: var(--bg); border-color: var(--green); }
+
+  /* window */
+  .win {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,.45);
+  }
+  .win-head {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    background: var(--panel-2); border-bottom: 1px solid var(--line); font: 12px var(--mono); color: var(--muted);
+  }
+  .dots { display: flex; gap: 6px; margin-right: 6px; }
+  .dots i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); display: block; }
+  .dots i:nth-child(1) { background: #ef6a5e; } .dots i:nth-child(2) { background: #f4be4f; } .dots i:nth-child(3) { background: #61c454; }
+  pre.code {
+    margin: 0; padding: 18px 18px 20px; font: 13.5px/1.75 var(--mono); overflow-x: auto; counter-reset: ln;
+  }
+  pre.code .l { display: block; }
+  pre.code .l::before {
+    counter-increment: ln; content: counter(ln); display: inline-block; width: 2ch; margin-right: 16px;
+    text-align: right; color: var(--dim);
+  }
+  .k { color: var(--pink); } .s { color: var(--yellow); } .f { color: var(--cyan); }
+  .n { color: var(--orange); } .c { color: var(--dim); font-style: italic; } .t { color: var(--purple); }
+  .caret { display: inline-block; width: .6em; height: 1.1em; vertical-align: -.2em; background: var(--green); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* sections */
+  section { padding: 56px 0 8px; scroll-margin-top: 60px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+  h2 { font: 700 1.35rem var(--mono); margin: 0; }
+  h2 .hash { color: var(--green); }
+  .sec-head .hint { font: 12px var(--mono); color: var(--dim); }
+
+  /* stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 8px 0 0; }
+  .stat { border: 1px dashed var(--line); border-radius: 10px; padding: 14px; background: color-mix(in srgb, var(--panel) 60%, transparent); }
+  .stat b { display: block; font: 800 1.6rem var(--mono); color: var(--green); }
+  .stat span { font-size: .85rem; color: var(--muted); }
+
+  /* filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; font: 13px var(--mono); }
+  .filters .flag { color: var(--dim); align-self: center; }
+  .filters button {
+    font: inherit; color: var(--muted); background: transparent; border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  }
+  .filters button[aria-pressed="true"] { color: var(--bg); background: var(--green); border-color: var(--green); }
+
+  /* projects */
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .proj {
+    position: relative; display: flex; flex-direction: column;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px;
+    transition: border-color .2s, transform .2s;
+  }
+  .proj:hover { border-color: color-mix(in srgb, var(--green) 55%, var(--line)); transform: translateY(-2px); }
+  .proj[hidden] { display: none; }
+  .proj.wide { grid-column: 1 / -1; }
+  .proj .path { font: 12px var(--mono); color: var(--dim); margin-bottom: 6px; }
+  .proj .path b { color: var(--green); font-weight: 400; }
+  .proj h3 { font: 700 1.12rem var(--mono); margin: 0 0 8px; }
+  .proj p { margin: 0 0 12px; color: var(--muted); font-size: .96rem; }
+  .metric {
+    font: 13px/1.6 var(--mono); color: var(--fg); background: var(--panel-2);
+    border-left: 2px solid var(--green); border-radius: 0 6px 6px 0; padding: 8px 12px; margin: 0 0 14px;
+  }
+  .metric::before { content: "> "; color: var(--green); }
+  .tags { list-style: none; padding: 0; margin: auto 0 14px; display: flex; flex-wrap: wrap; gap: 6px; font: 12px var(--mono); }
+  .tags li { color: var(--purple); background: color-mix(in srgb, var(--purple) 10%, transparent); padding: 2px 8px; border-radius: 5px; }
+  .proj .links { display: flex; gap: 16px; font: 600 13px var(--mono); }
+  .proj .links a::after { content: " ↗"; color: var(--dim); }
+
+  /* git log */
+  .log { font: 14px/1.6 var(--mono); }
+  .commit { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; padding: 16px 0; border-bottom: 1px dashed var(--line); }
+  .commit:last-child { border-bottom: 0; }
+  .commit .sha { color: var(--yellow); }
+  .commit .ref { color: var(--cyan); }
+  .commit .ref em { color: var(--green); font-style: normal; }
+  .commit .msg { grid-column: 2; font-family: var(--sans); color: var(--muted); font-size: .96rem; }
+  .commit .msg strong { color: var(--fg); font-weight: 600; }
+
+  /* stack */
+  .stack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .stack .win pre.code { font-size: 13px; }
+
+  /* terminal */
+  .term pre { margin: 0; padding: 16px 18px 6px; font: 13.5px/1.7 var(--mono); white-space: pre-wrap; max-height: 320px; overflow-y: auto; }
+  .term form { display: flex; gap: 8px; padding: 0 18px 16px; font: 13.5px var(--mono); }
+  .term label { color: var(--green); white-space: nowrap; }
+  .term input {
+    flex: 1; min-width: 0; background: transparent; border: 0; color: var(--fg); font: inherit; caret-color: var(--green);
+  }
+  .term input:focus { outline: none; }
+  .chips-cmd { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 18px 16px; }
+  .chips-cmd button {
+    font: 12px var(--mono); color: var(--muted); background: var(--panel-2); border: 1px solid var(--line);
+    padding: 3px 9px; border-radius: 5px; cursor: pointer;
+  }
+  .chips-cmd button:hover { color: var(--fg); border-color: var(--muted); }
+  .ok { color: var(--green); } .err { color: var(--pink); } .dim { color: var(--dim); }
+
+  footer { padding: 56px 0 40px; font: 12px var(--mono); color: var(--dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; padding-top: 48px; }
+    .grid, .stack { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .bar .prompt { display: none; }
+    .bar nav { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
 </head>
 <body>
-<p>Juani: <a href="/telegram-personal-assistant/guia/">guía</a> · <a href="/telegram-personal-assistant/privacidad/">privacidad</a> · <a href="/telegram-personal-assistant/terminos/">condiciones</a></p>
+
+<header class="bar">
+  <div class="wrap">
+    <span class="prompt">juandsep@github:~$</span>
+    <nav aria-label="Sections">
+      <a href="#projects">projects</a>
+      <a href="#work">work</a>
+      <a href="#stack">stack</a>
+      <a href="#terminal">terminal</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Toggle color theme">theme</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Lead Data Scientist · Bogotá, CO</p>
+      <h1>Juan D<br>Sepulveda<span class="accent">_</span></h1>
+      <p class="lead">I build <strong>decision systems where causal inference meets LLMs</strong>, and ship them as small, cheap, observable services: data, model, API, CI/CD and infrastructure as code, with the results measured.</p>
+      <div class="cta">
+        <a class="btn primary" href="#projects">$ ls projects/</a>
+        <a class="btn" href="https://github.com/juandsep">github</a>
+        <a class="btn" href="https://linkedin.com/in/juan-d-sepulveda">linkedin</a>
+        <a class="btn" href="mailto:juandsep@gmail.com">email</a>
+      </div>
+    </div>
+
+    <div class="win" aria-label="About me, written as Python">
+      <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>about.py</div>
+<pre class="code" id="about"><span class="l"><span class="k">from</span> dataclasses <span class="k">import</span> dataclass</span>
+<span class="l"></span>
+<span class="l"><span class="f">@dataclass</span></span>
+<span class="l"><span class="k">class</span> <span class="t">Juan</span>:</span>
+<span class="l">    role    = <span class="s">"Lead Data Scientist @ P&amp;G"</span></span>
+<span class="l">    focus   = [<span class="s">"causal ML"</span>, <span class="s">"LLM agents"</span>, <span class="s">"MLOps"</span>]</span>
+<span class="l">    clouds  = (<span class="s">"GCP"</span>, <span class="s">"AWS"</span>, <span class="s">"Azure"</span>)</span>
+<span class="l">    idle    = <span class="n">0</span>  <span class="c"># instances; everything scales to zero</span></span>
+<span class="l">    offline = [<span class="s">"vinyl"</span>, <span class="s">"Casio watches"</span>]</span>
+<span class="l"></span>
+<span class="l">    <span class="k">def</span> <span class="f">ship</span>(self, idea):</span>
+<span class="l">        <span class="k">return</span> measure(deploy(idea))<span class="caret" aria-hidden="true"></span></span></pre>
+    </div>
+  </div>
+
+  <div class="stats reveal">
+    <div class="stat"><b>$1.2M</b><span>yearly cost cut at P&amp;G with LLMs over econometric models</span></div>
+    <div class="stat"><b>&gt;60%</b><span>less manual effort, legal copilot at Mercado Libre</span></div>
+    <div class="stat"><b>-20%</b><span>promo spend with causal uplift at AB InBev</span></div>
+    <div class="stat"><b>0%</b><span>hallucinated answers in my RAG eval set</span></div>
+  </div>
+
+  <section id="projects">
+    <div class="sec-head reveal">
+      <h2><span class="hash">#</span> projects</h2>
+      <span class="hint">// each one runs end to end, with code and a demo</span>
+    </div>
+
+    <div class="filters reveal" role="group" aria-label="Filter projects">
+      <span class="flag">--filter</span>
+      <button type="button" data-f="all" aria-pressed="true">all</button>
+      <button type="button" data-f="llm" aria-pressed="false">llm</button>
+      <button type="button" data-f="causal" aria-pressed="false">causal</button>
+      <button type="button" data-f="mlops" aria-pressed="false">mlops</button>
+    </div>
+
+    <div class="grid">
+      <article class="proj reveal" data-tags="llm mlops">
+        <div class="path">~/<b>document-rag-assistant</b> · AWS</div>
+        <h3>Document RAG Assistant</h3>
+        <p>Answers business questions over a document corpus, cites the passages behind each answer and says so when the documents do not cover the question.</p>
+        <div class="metric">same model, 20 questions: 100% correct with retrieval vs 19% alone</div>
+        <ul class="tags"><li>Lambda</li><li>Qdrant</li><li>Ollama Cloud</li><li>MLflow</li></ul>
+        <div class="links">
+          <a href="https://document-rag-assistant-portfolio.streamlit.app/">demo</a>
+          <a href="https://github.com/juandsep/document-rag-assistant">code</a>
+        </div>
+      </article>
+
+      <article class="proj reveal" data-tags="causal mlops">
+        <div class="path">~/<b>uplift-modeling-pipeline</b> · GCP</div>
+        <h3>Uplift Modeling Pipeline</h3>
+        <p>Finds the customers a campaign actually moves, so the budget skips people who would have bought anyway. 200k clients, 45.8M purchase rows.</p>
+        <div class="metric">S-learner: Qini 0.169 vs 0.111 for the T-learner</div>
+        <ul class="tags"><li>causalml</li><li>XGBoost</li><li>Airflow</li><li>FastAPI</li><li>Terraform</li></ul>
+        <div class="links">
+          <a href="https://huggingface.co/spaces/sepulvedajd/uplift-targeting-demo">demo</a>
+          <a href="https://github.com/juandsep/uplift-modeling-pipeline">code</a>
+        </div>
+      </article>
+
+      <article class="proj reveal" data-tags="causal mlops">
+        <div class="path">~/<b>dynamic-pricing-engine</b> · Azure</div>
+        <h3>Dynamic Pricing Engine</h3>
+        <p>Prices each request with Thompson Sampling: every price level is a bandit arm weighted by margin, fitted on about 1M real order lines.</p>
+        <div class="metric">scored by regret against fixed-price baselines</div>
+        <ul class="tags"><li>Bandits</li><li>DuckDB</li><li>Container Apps</li><li>Cosmos DB</li></ul>
+        <div class="links">
+          <a href="https://huggingface.co/spaces/sepulvedajd/dynamic-pricing-demo">demo</a>
+          <a href="https://github.com/juandsep/dynamic-pricing-engine">code</a>
+        </div>
+      </article>
+
+      <article class="proj reveal" data-tags="llm mlops">
+        <div class="path">~/<b>telegram-personal-assistant</b> · GCP</div>
+        <h3>Juani, Telegram assistant</h3>
+        <p>Logs expenses and income in any currency, suggests budgets and keeps an agenda with reminders at the exact time, synced to your calendar.</p>
+        <div class="metric">one Cloud Run service scaled to zero, under US$1/month</div>
+        <ul class="tags"><li>Cloud Run</li><li>Pub/Sub</li><li>Firestore</li><li>DeepSeek</li></ul>
+        <div class="links">
+          <a href="/telegram-personal-assistant/guia/">guide</a>
+          <a href="https://github.com/juandsep/telegram-personal-assistant">code</a>
+        </div>
+      </article>
+
+      <article class="proj wide reveal" data-tags="mlops">
+        <div class="path">~/<b>portfolio-infra</b> · Terraform</div>
+        <h3>Portfolio Infra</h3>
+        <p>The shared layer under everything above: an MLflow server on Cloud Run that scales to zero, and a budget guard that unlinks billing once a project hits its monthly limit.</p>
+        <ul class="tags"><li>Terraform</li><li>GCP</li><li>MLflow</li><li>Grafana</li></ul>
+        <div class="links">
+          <a href="https://github.com/juandsep/portfolio-infra">code</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="sec-head reveal">
+      <h2><span class="hash">#</span> work</h2>
+      <span class="hint">$ git log --career</span>
+    </div>
+    <div class="win reveal">
+      <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>git log</div>
+      <div class="log" style="padding: 4px 20px;">
+        <div class="commit">
+          <span class="sha">a7f3c21</span><span class="ref">(<em>HEAD</em>) Procter &amp; Gamble · Lead Data Scientist</span>
+          <span class="msg"><strong>LLM layers over econometric models</strong> that decompose promotional uplift; about US$1.2M saved in yearly operating cost.</span>
+        </div>
+        <div class="commit">
+          <span class="sha">5e90c2c</span><span class="ref">Mercado Libre</span>
+          <span class="msg"><strong>Agent-based legal copilot</strong> and document intelligence; more than 60% less manual processing.</span>
+        </div>
+        <div class="commit">
+          <span class="sha">0bef9be</span><span class="ref">AB InBev</span>
+          <span class="msg"><strong>Causal uplift models in production</strong>; about 20% less promotional spend and 12% higher net contribution margin.</span>
+        </div>
+        <div class="commit">
+          <span class="sha">init</span><span class="ref">Universidad de Los Andes</span>
+          <span class="msg"><strong>M.Sc. in Information Engineering</strong>, after a B.Sc. in Economics.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="sec-head reveal">
+      <h2><span class="hash">#</span> stack</h2>
+      <span class="hint">$ cat pyproject.toml</span>
+    </div>
+    <div class="stack">
+      <div class="win reveal">
+        <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>ml.toml</div>
+<pre class="code"><span class="l"><span class="t">[ml]</span></span>
+<span class="l">causal = <span class="s">"uplift, A/B"</span></span>
+<span class="l">genai  = <span class="s">"RAG, agents"</span></span>
+<span class="l">vision = <span class="k">true</span></span>
+<span class="l">langs  = <span class="s">"Python, R, SQL"</span></span></pre>
+      </div>
+      <div class="win reveal">
+        <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>ops.toml</div>
+<pre class="code"><span class="l"><span class="t">[ops]</span></span>
+<span class="l">serve = <span class="s">"FastAPI"</span></span>
+<span class="l">ship  = <span class="s">"Docker, K8s"</span></span>
+<span class="l">track = <span class="s">"MLflow"</span></span>
+<span class="l">ci    = <span class="s">"GH Actions"</span></span></pre>
+      </div>
+      <div class="win reveal">
+        <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>cloud.toml</div>
+<pre class="code"><span class="l"><span class="t">[cloud]</span></span>
+<span class="l">gcp   = <span class="s">"Cloud Run"</span></span>
+<span class="l">aws   = <span class="s">"Lambda"</span></span>
+<span class="l">azure = <span class="s">"ACA"</span></span>
+<span class="l">iac   = <span class="s">"Terraform"</span></span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="terminal">
+    <div class="sec-head reveal">
+      <h2><span class="hash">#</span> terminal</h2>
+      <span class="hint">// try it: type help</span>
+    </div>
+    <div class="win term reveal">
+      <div class="win-head"><span class="dots"><i></i><i></i><i></i></span>zsh — juandsep</div>
+      <pre id="out" aria-live="polite"><span class="dim">Last login: today on ttys001</span>
+Type <span class="ok">help</span> to see what this shell can do.</pre>
+      <form id="term">
+        <label for="cmd">~ $</label>
+        <input id="cmd" autocomplete="off" spellcheck="false" autocapitalize="off" aria-label="Command">
+      </form>
+      <div class="chips-cmd">
+        <button type="button">help</button><button type="button">whoami</button><button type="button">ls projects</button><button type="button">contact</button><button type="button">sudo hire juan</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year">2026</span> Juan D Sepulveda</span>
+    <span>hand-written HTML · no build step · served by GitHub Pages</span>
+  </footer>
+</main>
+
+<script>
+(() => {
+  // theme toggle; the choice is a per-viewer convenience
+  const root = document.documentElement;
+  const btn = document.getElementById("theme");
+  try { const t = localStorage.getItem("theme"); if (t) root.dataset.theme = t; } catch {}
+  btn.addEventListener("click", () => {
+    const dark = root.dataset.theme
+      ? root.dataset.theme === "dark"
+      : !matchMedia("(prefers-color-scheme: light)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("theme", root.dataset.theme); } catch {}
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // reveal on scroll
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  // project filter
+  const fbtns = document.querySelectorAll(".filters button");
+  fbtns.forEach(b => b.addEventListener("click", () => {
+    fbtns.forEach(x => x.setAttribute("aria-pressed", x === b));
+    document.querySelectorAll(".proj").forEach(p => {
+      p.hidden = b.dataset.f !== "all" && !p.dataset.tags.split(" ").includes(b.dataset.f);
+    });
+  }));
+
+  // terminal
+  const out = document.getElementById("out");
+  const input = document.getElementById("cmd");
+  const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  const link = (href, text) => `<a href="${href}">${text}</a>`;
+  const projects = [...document.querySelectorAll(".proj")].map(p => ({
+    name: p.querySelector(".path b").textContent,
+    desc: p.querySelector("h3").textContent,
+    href: p.querySelector(".links a:last-child").href,
+  }));
+  const cmds = {
+    help: () => ["commands:", "  whoami        who is this", "  ls projects   list the repos", "  open &lt;name&gt;   open a repo",
+                 "  contact       how to reach me", "  stack         what I use", "  clear         clean the screen"].join("\n"),
+    whoami: () => "Juan D Sepulveda, Lead Data Scientist in Bogotá.\nCausal ML + LLM agents + MLOps. Economist turned engineer.",
+    ls: a => a[0] === "projects" || !a.length
+      ? projects.map(p => `<span class="ok">${p.name.padEnd(30)}</span>${p.desc}`).join("\n")
+      : `<span class="err">ls: ${esc(a[0])}: no such directory</span>`,
+    open: a => {
+      const p = projects.find(p => a[0] && p.name.startsWith(a[0]));
+      if (!p) return `<span class="err">open: try one of: ${projects.map(p => p.name.split("-")[0]).join(", ")}</span>`;
+      window.open(p.href, "_blank", "noopener");
+      return `opening ${link(p.href, p.name)} ...`;
+    },
+    contact: () => `email     ${link("mailto:juandsep@gmail.com", "juandsep@gmail.com")}\nlinkedin  ${link("https://linkedin.com/in/juan-d-sepulveda", "in/juan-d-sepulveda")}\ngithub    ${link("https://github.com/juandsep", "github.com/juandsep")}`,
+    stack: () => "python r sql rust · fastapi docker k8s mlflow · gcp aws azure terraform",
+    sudo: a => a.join(" ") === "hire juan"
+      ? `<span class="ok">[sudo] access granted.</span> Drafting an email... ${link("mailto:juandsep@gmail.com?subject=Let%27s%20talk", "send it")}`
+      : `<span class="err">sudo: nice try.</span>`,
+    clear: () => null,
+  };
+  const history = []; let hi = 0;
+  const run = line => {
+    const [name, ...args] = line.trim().split(/\s+/);
+    if (!name) return;
+    history.push(line); hi = history.length;
+    if (name === "clear") { out.innerHTML = ""; return; }
+    const res = cmds[name] ? cmds[name](args) : `<span class="err">zsh: command not found: ${esc(name)}</span> <span class="dim">(try help)</span>`;
+    out.innerHTML += `\n<span class="ok">~ $</span> ${esc(line)}\n${res}`;
+    out.scrollTop = out.scrollHeight;
+  };
+  document.getElementById("term").addEventListener("submit", e => { e.preventDefault(); run(input.value); input.value = ""; });
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowUp" && hi > 0) { input.value = history[--hi]; e.preventDefault(); }
+    if (e.key === "ArrowDown") { hi = Math.min(hi + 1, history.length); input.value = history[hi] || ""; }
+  });
+  document.querySelectorAll(".chips-cmd button").forEach(b => b.addEventListener("click", () => { run(b.textContent); input.focus({ preventScroll: true }); }));
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+  });
+})();
+</script>
 </body>
 </html>
