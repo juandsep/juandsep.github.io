@@ -6,6 +6,10 @@
 <title>Juan D Sepulveda</title>
 <meta name="description" content="Juan D Sepulveda, Lead Data Scientist. Causal inference, LLM systems and MLOps: portfolio projects with code, demos and results.">
 <link rel="canonical" href="https://juandsep.github.io/">
+<meta property="og:title" content="Juan D Sepulveda">
+<meta property="og:description" content="Lead Data Scientist. Causal inference, LLM systems and MLOps.">
+<meta property="og:image" content="https://juandsep.github.io/avatar.jpg">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23111613'/><text x='5' y='22' font-family='monospace' font-size='16' fill='%2346d39a'>&gt;_</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,6 +78,29 @@
     font: 12px var(--mono); padding: 4px 8px; border-radius: 6px; cursor: pointer;
   }
   .theme:hover { color: var(--fg); border-color: var(--muted); }
+
+  /* avatar */
+  .avatar {
+    position: relative; width: 112px; height: 112px; margin: 0 0 22px; border-radius: 22px;
+    border: 1px solid var(--line); background: var(--panel); padding: 5px; cursor: pointer;
+    box-shadow: 0 0 0 4px var(--glow);
+  }
+  .avatar img, .avatar pre {
+    display: block; width: 100%; height: 100%; border-radius: 17px; margin: 0;
+    object-fit: cover; transition: opacity .35s;
+  }
+  .avatar pre {
+    position: absolute; inset: 5px; width: auto; height: auto; overflow: hidden;
+    font: 700 4.6px/4.6px var(--mono); letter-spacing: .4px; color: var(--green);
+    background: var(--panel-2); opacity: 0; white-space: pre; text-align: center;
+  }
+  .avatar.ascii pre { opacity: 1; }
+  .avatar.ascii img { opacity: 0; }
+  .avatar .tag {
+    position: absolute; right: -8px; bottom: -8px; font: 600 10px var(--mono);
+    background: var(--green); color: var(--bg); border-radius: 6px; padding: 2px 6px;
+  }
+  .avatar:hover { border-color: var(--green); }
 
   /* hero */
   .hero { padding: 72px 0 40px; display: grid; gap: 32px; grid-template-columns: 1.15fr 1fr; align-items: center; }
@@ -235,6 +262,11 @@
 
   <div class="hero">
     <div>
+      <button class="avatar" id="avatar" type="button" aria-label="Toggle ASCII version of my photo">
+        <img src="avatar.jpg" width="102" height="102" alt="Juan from behind, holding a beer in front of a church tower">
+        <pre aria-hidden="true"></pre>
+        <span class="tag" aria-hidden="true">.jpg</span>
+      </button>
       <p class="eyebrow">Lead Data Scientist · Bogotá, CO</p>
       <h1>Juan D<br>Sepulveda<span class="accent">_</span></h1>
       <p class="lead">I build <strong>decision systems where causal inference meets LLMs</strong>, and ship them as small, cheap, observable services: data, model, API, CI/CD and infrastructure as code, with the results measured.</p>
@@ -433,6 +465,32 @@ Type <span class="ok">help</span> to see what this shell can do.</pre>
 
 <script>
 (() => {
+  // avatar: hover or tap swaps the photo for an ASCII render of itself
+  const av = document.getElementById("avatar");
+  const img = av.querySelector("img");
+  const draw = () => {
+    const cols = 34, rows = 22, ramp = " .:-=+*#%@";
+    const c = document.createElement("canvas"); c.width = cols; c.height = rows;
+    const x = c.getContext("2d"); x.drawImage(img, 0, 0, cols, rows);
+    const d = x.getImageData(0, 0, cols, rows).data;
+    let txt = "";
+    for (let y = 0; y < rows; y++) {
+      for (let i = 0; i < cols; i++) {
+        const k = (y * cols + i) * 4, lum = (.3 * d[k] + .59 * d[k + 1] + .11 * d[k + 2]) / 255;
+        txt += ramp[Math.floor((1 - lum) * (ramp.length - 1))];
+      }
+      txt += "\n";
+    }
+    av.querySelector("pre").textContent = txt;
+  };
+  img.complete ? draw() : img.addEventListener("load", draw);
+  const tag = av.querySelector(".tag");
+  const ascii = on => { av.classList.toggle("ascii", on); tag.textContent = on ? ".txt" : ".jpg"; };
+  // touch fires enter + click on one tap, so hover is mouse-only
+  av.addEventListener("pointerenter", e => e.pointerType === "mouse" && ascii(true));
+  av.addEventListener("pointerleave", e => e.pointerType === "mouse" && ascii(false));
+  av.addEventListener("click", () => ascii(!av.classList.contains("ascii")));
+
   // theme toggle; the choice is a per-viewer convenience
   const root = document.documentElement;
   const btn = document.getElementById("theme");
